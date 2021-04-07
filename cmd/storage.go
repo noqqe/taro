@@ -13,6 +13,7 @@ import (
 // a fish
 type Photo struct {
 	Name      string
+	Filename  string
 	Alt       string
 	Tags      []string
 	Groups    []string
@@ -27,7 +28,7 @@ func readStringInput(text string) string {
 	return s
 }
 
-func Add() string {
+func Add(filename string) string {
 
 	dir := "./db"
 
@@ -40,6 +41,7 @@ func Add() string {
 
 	fmt.Println(photo.Name)
 	photo.Name = readStringInput("Name")
+	photo.Filename = filename
 
 	db.Write("photos", photo.Name, photo)
 
