@@ -87,3 +87,24 @@ func List() {
 	// }
 
 }
+
+func Show(name string) {
+	fmt.Println(getPhoto(name))
+}
+
+func getPhoto(name string) Photo {
+	// Read all fish from the database, unmarshaling the response.
+	dir := "./db"
+
+	db, err := scribble.New(dir, nil)
+	if err != nil {
+		fmt.Println("Error", err)
+	}
+
+	p := Photo{}
+	if err := db.Read("photos", name, &p); err != nil {
+		fmt.Println("Error", err)
+	}
+
+	return p
+}

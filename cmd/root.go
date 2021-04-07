@@ -9,8 +9,6 @@ import (
 
 func Run() {
 
-	var in string
-
 	// Option Parser
 	app := &cli.App{
 		Name:        "taro",
@@ -18,21 +16,44 @@ func Run() {
 		Compiled:    time.Now(),
 		Description: "upload images to various image sites",
 		Usage:       "upload images to various image sites",
-		Flags: []cli.Flag{
-			&cli.PathFlag{
-				Name:        "in",
-				Usage:       "Image to edit (input)",
-				Aliases:     []string{"i"},
-				Destination: &in,
-				Required:    true,
-				TakesFile:   true,
+		Commands: []*cli.Command{
+			{
+				Name:    "add",
+				Aliases: []string{"a"},
+				Usage:   "add a photo to the queue",
+				Action: func(c *cli.Context) error {
+					name := Add(c.Args().Get(0))
+					UploadToS3(name, c.Args().Get(0))
+					return nil
+				},
 			},
-		},
-		Action: func(c *cli.Context) error {
-			name := Add(in)
-			UploadToS3(name, in)
-			List()
-			return nil
+			{
+				Name:    "list",
+				Aliases: []string{"l"},
+				Usage:   "list all photos",
+				Action: func(c *cli.Context) error {
+					List()
+					return nil
+				},
+			},
+			{
+				Name:    "show",
+				Aliases: []string{"s"},
+				Usage:   "add a photo to the queue",
+				Action: func(c *cli.Context) error {
+					Show(c.Args().Get(0))
+					return nil
+				},
+			},
+			{
+				Name:    "upload",
+				Aliases: []string{"u"},
+				Usage:   "upload a photo to sites",
+				Action: func(c *cli.Context) error {
+					UploadToFlickr(c.Args().Get(0))
+					return nil
+				},
+			},
 		},
 	}
 
