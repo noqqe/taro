@@ -1,25 +1,34 @@
 package cmd
 
 import (
+	"bufio"
 	"encoding/json"
 	"fmt"
+	"os"
+	"strings"
 
 	scribble "github.com/nanobox-io/golang-scribble"
 )
 
 // a fish
 type Photo struct {
-	URL    string
-	Name   string
-	Alt    string
-	Tags   string
-	Groups string
+	URL       string
+	Name      string
+	Alt       string
+	Tags      []string
+	Groups    []string
+	Published bool
 }
 
-// a fish
-type Fish struct{ Name string }
+func readStringInput(text string) string {
+	reader := bufio.NewReader(os.Stdin)
+	fmt.Printf("%s: ", text)
+	s, _ := reader.ReadString('\n')
+	s = strings.Replace(s, "\n", "", 1)
+	return s
+}
 
-func Main() {
+func Add() {
 
 	dir := "./db"
 
@@ -28,31 +37,42 @@ func Main() {
 		fmt.Println("Error", err)
 	}
 
-	// Write a fish to the database
-	for _, name := range []string{"onefish", "twofish", "redfish", "bluefish"} {
-		db.Write("fish", name, Fish{Name: name})
-	}
+	var photo Photo
 
-	// Read a fish from the database (passing fish by reference)
-	onefish := Fish{}
-	if err := db.Read("fish", "onefish", &onefish); err != nil {
-		fmt.Println("Error", err)
-	}
+	fmt.Println(photo.Name)
+	photo.Name = readStringInput("Name")
+	photo.URL = readStringInput("URL")
+
+	db.Write("photos", photo.Name, photo)
+}
+
+func List() {
 
 	// Read all fish from the database, unmarshaling the response.
-	records, err := db.ReadAll("fish")
+	dir := "./db"
+
+	db, err := scribble.New(dir, nil)
 	if err != nil {
 		fmt.Println("Error", err)
 	}
 
-	fishies := []Fish{}
+	records, err := db.ReadAll("photos")
 	for _, f := range records {
-		fishFound := Fish{}
-		if err := json.Unmarshal([]byte(f), &fishFound); err != nil {
+		p := Photo{}
+		if err := json.Unmarshal([]byte(f), &p); err != nil {
 			fmt.Println("Error", err)
 		}
-		fishies = append(fishies, fishFound)
+		fmt.Println(p)
 	}
+
+	// fishies := []Fish{}
+	// for _, f := range records {
+	// 	fishFound := Fish{}
+	// 	if err := json.Unmarshal([]byte(f), &fishFound); err != nil {
+	// 		fmt.Println("Error", err)
+	// 	}
+	// 	fishies = append(fishies, fishFound)
+	// }
 
 	// // Delete a fish from the database
 	// if err := db.Delete("fish", "onefish"); err != nil {

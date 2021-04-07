@@ -5,5 +5,6 @@ import (
 )
 
 func main() {
-	cmd.Main()
+	cmd.List()
+	cmd.Add()
 }
