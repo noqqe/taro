@@ -32,8 +32,10 @@ func UploadToFlickr(name string) {
 
 	// upload a photo
 	params := flickr.NewUploadParams()
-	params.Title = "A Gopher"
-	resp, err := flickr.UploadReader(client, body, "foo", params)
+	params.Title = photo.Name
+	params.Tags = photo.Tags
+	params.Description = photo.Alt
+	resp, err := flickr.UploadReader(client, body, photo.Name, params)
 	if err != nil {
 		fmt.Println("Failed uploading:", err)
 		if resp != nil {

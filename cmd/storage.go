@@ -2,9 +2,13 @@ package cmd
 
 import (
 	"bufio"
+	"crypto/sha1"
 	"encoding/json"
 	"fmt"
+	"io"
+	"log"
 	"os"
+	"path"
 	"strings"
 
 	scribble "github.com/nanobox-io/golang-scribble"
@@ -12,6 +16,7 @@ import (
 
 // a fish
 type Photo struct {
+	Id        string
 	Name      string
 	Filename  string
 	Alt       string
@@ -42,6 +47,26 @@ func readStringInput(text string) string {
 	return s
 }
 
+// Function for reading comma separated list into db
+func readArrayInput(text string) []string {
+	return strings.Split(readStringInput(text), ",")
+}
+
+func calcHash(filename string) string {
+	f, err := os.Open(filename)
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer f.Close()
+
+	h := sha1.New()
+	if _, err := io.Copy(h, f); err != nil {
+		log.Fatal(err)
+	}
+
+	return fmt.Sprintf("%x", h.Sum(nil))
+}
+
 // Add new photo data to the db store
 func Add(filename string) string {
 
@@ -49,13 +74,14 @@ func Add(filename string) string {
 
 	db := getDB()
 
-	fmt.Println(photo.Name)
+	photo.Id = calcHash(filename)
 	photo.Name = readStringInput("Name")
-	photo.Filename = filename
+	photo.Tags = readArrayInput("Tags")
+	photo.Filename = path.Base(filename)
 
 	db.Write("photos", photo.Name, photo)
 
-	return photo.Name
+	return photo.Id
 }
 
 // Read all fish from the database, unmarshaling the response.

@@ -22,8 +22,8 @@ func Run() {
 				Aliases: []string{"a"},
 				Usage:   "add a photo to the queue",
 				Action: func(c *cli.Context) error {
-					name := Add(c.Args().Get(0))
-					UploadToS3(name, c.Args().Get(0))
+					pId := Add(c.Args().Get(0))
+					UploadToS3(pId, c.Args().Get(0))
 					return nil
 				},
 			},
