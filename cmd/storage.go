@@ -12,7 +12,6 @@ import (
 
 // a fish
 type Photo struct {
-	URL       string
 	Name      string
 	Alt       string
 	Tags      []string
@@ -28,7 +27,7 @@ func readStringInput(text string) string {
 	return s
 }
 
-func Add() {
+func Add() string {
 
 	dir := "./db"
 
@@ -41,9 +40,10 @@ func Add() {
 
 	fmt.Println(photo.Name)
 	photo.Name = readStringInput("Name")
-	photo.URL = readStringInput("URL")
 
 	db.Write("photos", photo.Name, photo)
+
+	return photo.Name
 }
 
 func List() {

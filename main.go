@@ -5,6 +5,8 @@ import (
 )
 
 func main() {
-	cmd.List()
-	cmd.Add()
+	// cmd.List()
+	name := cmd.Add()
+	cmd.UploadToS3(name)
+
 }
